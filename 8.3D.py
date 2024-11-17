@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import trimesh
 import asyncio
-import math
 
 with open('D:/fatemeh_ajam/lightningChart/A/license-key', 'r') as f:
     mylicensekey = f.read().strip()
@@ -32,7 +31,7 @@ normalized_heights = [
     for value in inflation_data
 ]
 
-chart = lc.Chart3D(title="Inflation-Driven Balloon Movement", theme=lc.Themes.Light)
+chart = lc.Chart3D(title="GDP growth rate-Driven Balloon Movement", theme=lc.Themes.Light)
 
 balloon_model = chart.add_mesh_model()
 
@@ -55,7 +54,7 @@ balloon_model.set_model_location(0, 0, 0)
 balloon_model.set_color_shading_style(
     phong_shading=True,
     specular_reflection=0.8,
-    specular_color=lc.Color(255, 255, 255)
+    specular_color=lc.Color(221, 227, 52)
 )
 
 chart.get_default_x_axis().set_title('X')
