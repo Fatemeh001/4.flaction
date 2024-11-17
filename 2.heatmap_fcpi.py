@@ -63,3 +63,6 @@ chart.add_legend(data=heatmap_series).set_title('Index Intensity')
 
 
 chart.open()
+
+
+
