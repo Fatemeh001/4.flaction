@@ -75,7 +75,8 @@ for continent in ['Africa', 'Asia', 'Europe', 'North America', 'Oceania', 'South
 
     gauges[continent].set_value_indicators([
         {'start': -50, 'end': -10, 'color': lc.Color('blue')},  
-        {'start': -10, 'end': 10, 'color': lc.Color('yellow')}, 
+        { 'start': -10, 'end': 0, 'color': lc.Color('orange') },
+        {'start': -0, 'end': 10, 'color': lc.Color('yellow')}, 
         {'start': 10, 'end': 50, 'color': lc.Color('red')}  
     ])
     col += 1
