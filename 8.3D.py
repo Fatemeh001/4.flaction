@@ -58,16 +58,16 @@ balloon_model.set_color_shading_style(
 )
 
 chart.get_default_x_axis().set_title('X')
-chart.get_default_y_axis().set_title('Height (Inflation)').set_interval(-1, 2)
+chart.get_default_y_axis().set_title('Height (GDP deflator growth rate )').set_interval(-1, 2)
 chart.get_default_z_axis().set_title('Z')
 
 chart.open(live=True)
 
 async def move_balloon():
     for year, height in zip(years, normalized_heights):
-        chart.set_title(f"Inflation-Driven Balloon Movement ({year})")
+        chart.set_title(f"GDP deflator growth rate -Driven Balloon Movement ({year})")
 
-        print(f"Year: {year}, Inflation: {inflation_data[list(years).index(year)]}, Height: {height}")
+        print(f"Year: {year}, GDP deflator growth rate : {inflation_data[list(years).index(year)]}, Height: {height}")
 
         balloon_model.set_model_location(0, height, 0)
 
