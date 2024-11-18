@@ -1,10 +1,9 @@
-
-
 import lightningchart as lc
 import pandas as pd
 import trimesh
 import asyncio
 
+# Load the license key
 with open('D:/fatemeh_ajam/lightningChart/A/license-key', 'r') as f:
     mylicensekey = f.read().strip()
 lc.set_license(mylicensekey)
@@ -72,6 +71,16 @@ chart.get_default_x_axis().set_title('Countries').set_interval(-2, len(countries
 chart.get_default_y_axis().set_title('Height (Inflation)').set_interval(0, 2)
 chart.get_default_z_axis().set_title('Time (Years)').set_interval(0, len(years))
 
+
+legend = chart.add_legend().set_title("Countries")
+for country, color in balloon_colors.items():
+    dummy_series = chart.add_point_series()
+    dummy_series.set_name(country)
+    dummy_series.set_point_color(lc.Color(color[0], color[1], color[2])) 
+    legend.add(dummy_series)
+
+
+# Load balloon mesh
 balloons = {}
 balloon_obj_path = 'Air_Balloon.obj'
 balloon_scene = trimesh.load(balloon_obj_path)
@@ -85,6 +94,7 @@ balloon_vertices = balloon_mesh.vertices.flatten().tolist()
 balloon_indices = balloon_mesh.faces.flatten().tolist()
 balloon_normals = balloon_mesh.vertex_normals.flatten().tolist()
 
+# Add balloons to chart
 for i, country in enumerate(countries):
     balloon = chart.add_mesh_model()
     balloon.set_model_geometry(vertices=balloon_vertices, indices=balloon_indices, normals=balloon_normals)
@@ -98,10 +108,6 @@ for i, country in enumerate(countries):
     balloons[country] = balloon
 
 def adjust_color(base_color, brightness, sensitivity=2):
-    """
-    Adjust the color brightness with a sensitivity factor, starting from bright and going darker,
-    without completely turning black.
-    """
     r, g, b = base_color
     inverted_brightness = max(1 - min(brightness * sensitivity, 1.0), 0.2)
     adjusted_color = lc.Color(
@@ -117,7 +123,7 @@ async def move_balloons():
         for i, country in enumerate(countries):
             height = normalized_heights[country][year_idx]
             brightness = normalized_energy[country][year_idx]
-            color = adjust_color(balloon_colors[country], brightness, sensitivity=2)  
+            color = adjust_color(balloon_colors[country], brightness, sensitivity=2)  # Sensitivity = 2
             balloons[country].set_model_location(i * 2, height, year_idx)
             balloons[country].set_color(color)
         chart.set_title(f"Balloon Race: Year {year}")
@@ -125,4 +131,3 @@ async def move_balloons():
 
 chart.open(live=True)
 asyncio.run(move_balloons())
-
