@@ -31,7 +31,8 @@ chart = lc.ChartXY(
 
 
 legend = chart.add_legend()
-
+chart.get_default_x_axis().set_title('Month')
+chart.get_default_y_axis().set_title('Value')
 
 for year in range(2018, 2024):
     year_data = data_last_5_years_t[data_last_5_years_t['Year'] == year]

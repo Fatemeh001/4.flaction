@@ -30,7 +30,8 @@ chart = lc.ChartXY(
     title=f"Energy Price Index for {selected_country} (2018-2023)"
 )
 
-
+chart.get_default_x_axis().set_title('Month')
+chart.get_default_y_axis().set_title('Value')
 legend = chart.add_legend()
 
 
