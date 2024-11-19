@@ -7,7 +7,7 @@ with open('D:/fatemeh_ajam/lightningChart/A/license-key', 'r') as f:
 lc.set_license(mylicensekey)
 
 
-file_path = 'Processed.xlsx'
+file_path = 'dataset/Processed.xlsx'
 fcpi_data = pd.read_excel(file_path, sheet_name='fcpi_m')
 ecpi_data = pd.read_excel(file_path, sheet_name='ecpi_m')
 

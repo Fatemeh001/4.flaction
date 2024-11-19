@@ -8,7 +8,7 @@ with open('D:/fatemeh_ajam/lightningChart/A/license-key', 'r') as f:
     mylicensekey = f.read().strip()
 lc.set_license(mylicensekey)
 
-file_path = 'Processed.xlsx'
+file_path = 'dataset/Processed.xlsx'
 data = pd.read_excel(file_path, sheet_name='ecpi_m')
 
 def get_continent(country_name):

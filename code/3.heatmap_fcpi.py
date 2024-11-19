@@ -6,7 +6,7 @@ with open('D:/fatemeh_ajam/lightningChart/A/license-key', 'r') as f:
     mylicensekey = f.read().strip()
 lc.set_license(mylicensekey)
 
-file_path = 'Processed.xlsx'
+file_path = 'dataset/Processed.xlsx'
 
 selected_country = "Albania"
 data = pd.read_excel(file_path, sheet_name='fcpi_m')

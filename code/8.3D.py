@@ -8,7 +8,7 @@ with open('D:/fatemeh_ajam/lightningChart/A/license-key', 'r') as f:
     mylicensekey = f.read().strip()
 lc.set_license(mylicensekey)
 
-file_path = 'Processed.xlsx'
+file_path = 'dataset/Processed.xlsx'
 def_a_data = pd.read_excel(file_path, sheet_name='def_a')
 
 country = "Turkey"
@@ -35,7 +35,7 @@ chart = lc.Chart3D(title="GDP growth rate-Driven Balloon Movement", theme=lc.The
 
 balloon_model = chart.add_mesh_model()
 
-balloon_obj_path = 'Air_Balloon.obj'
+balloon_obj_path = 'dataset/Air_Balloon.obj'
 balloon_scene = trimesh.load(balloon_obj_path)
 
 if isinstance(balloon_scene, trimesh.Scene):
