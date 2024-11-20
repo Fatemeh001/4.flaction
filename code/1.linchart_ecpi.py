@@ -45,3 +45,4 @@ for year in range(2018, 2024):
     legend.add(line_series)  
 
 chart.open()
+

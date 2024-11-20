@@ -170,7 +170,7 @@ async def move_balloons():
                 # Update line series
                 line_series[country].add([x_position], [height], [year_idx + (step / 50)])
             
-            await asyncio.sleep(0.02) 
+            await asyncio.sleep(0.01) 
 
 chart.open(live=True)
 asyncio.run(move_balloons())
