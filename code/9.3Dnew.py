@@ -3,7 +3,6 @@ import pandas as pd
 import trimesh
 import asyncio
 
-# Load the license key
 with open('D:/fatemeh_ajam/lightningChart/A/license-key', 'r') as f:
     mylicensekey = f.read().strip()
 lc.set_license(mylicensekey)
@@ -14,6 +13,7 @@ ecpi_data = pd.read_excel(file_path, sheet_name='ecpi_m')
 
 countries = ["Turkey", "Iran, Islamic Rep.", "Egypt, Arab Rep."]
 years = [str(year) for year in range(2000, 2024)]
+
 
 country_data = {}
 for country in countries:
@@ -38,6 +38,7 @@ normalized_heights = {
     for country, values in country_data.items()
 }
 
+
 energy_data = {}
 for country in countries:
     if country in ecpi_data['Country'].values:
@@ -60,27 +61,52 @@ normalized_energy = {
     for country, values in energy_data.items()
 }
 
+
 balloon_colors = {
-    "Turkey": (0, 0, 255),  # Blue
-    "Iran, Islamic Rep.": (0, 255, 0),  # Green
-    "Egypt, Arab Rep.": (255, 0, 0)  # Red
+    "Turkey": (0, 0, 255),
+    "Iran, Islamic Rep.": (0, 255, 0),
+    "Egypt, Arab Rep.": (255, 0, 0)
 }
 
-chart = lc.Chart3D(title="Balloon Race: Inflation & Energy", theme=lc.Themes.Light)
-chart.get_default_x_axis().set_title('Countries').set_interval(-2, len(countries) * 2)
-chart.get_default_y_axis().set_title('Height (Inflation)').set_interval(0, 2)
-chart.get_default_z_axis().set_title('Time (Years)').set_interval(0, len(years))
 
+chart = lc.Chart3D(title="Balloon Race: Normalized GDP Deflator Growth Rate & Energy", theme=lc.Themes.Light)
+
+x_axis = chart.get_default_x_axis().set_tick_strategy('Empty')
+x_axis.set_title('Countries')
+x_axis.set_interval(-0.5, 4.5, stop_axis_after=True).add_custom_tick
+
+
+custom_ticks = [0, 2, 4] 
+country_labels = ['Turkey', 'Iran', 'Egypt']
+
+
+for tick_value, label in zip(custom_ticks, country_labels):
+    custom_tick = x_axis.add_custom_tick()
+    custom_tick.set_value(tick_value)  
+    custom_tick.set_text(label) 
+
+
+
+
+chart.get_default_y_axis().set_title('Height (Inflation)').set_interval(0, 2,stop_axis_after=True)
+
+z_axis = chart.get_default_z_axis()
+z_axis.set_title('Time (Years)')
+z_axis.set_tick_strategy('Empty')  
+
+for i, year in enumerate(years):
+    if i % 2 == 0: 
+        custom_tick = z_axis.add_custom_tick()  
+        custom_tick.set_value(i) 
+        custom_tick.set_text(str(year))
 
 legend = chart.add_legend().set_title("Countries")
 for country, color in balloon_colors.items():
     dummy_series = chart.add_point_series()
     dummy_series.set_name(country)
-    dummy_series.set_point_color(lc.Color(color[0], color[1], color[2])) 
+    dummy_series.set_point_color(lc.Color(color[0], color[1], color[2]))
     legend.add(dummy_series)
 
-
-# Load balloon mesh
 balloons = {}
 balloon_obj_path = 'dataset/Air_Balloon.obj'
 balloon_scene = trimesh.load(balloon_obj_path)
@@ -94,18 +120,24 @@ balloon_vertices = balloon_mesh.vertices.flatten().tolist()
 balloon_indices = balloon_mesh.faces.flatten().tolist()
 balloon_normals = balloon_mesh.vertex_normals.flatten().tolist()
 
-# Add balloons to chart
 for i, country in enumerate(countries):
+    x_position = 0.75 + i * 1.5
     balloon = chart.add_mesh_model()
     balloon.set_model_geometry(vertices=balloon_vertices, indices=balloon_indices, normals=balloon_normals)
-    balloon.set_scale(0.008)
-    balloon.set_model_location(i * 2, 0, 0)
+    balloon.set_scale(0.005)
+    balloon.set_model_location(x_position, 0, 0)
     balloon.set_color_shading_style(
         phong_shading=True,
         specular_reflection=0.8,
         specular_color=lc.Color(255, 255, 255)
     )
     balloons[country] = balloon
+
+line_series = {}
+for country in countries:
+    line_series[country] = chart.add_line_series()
+    line_series[country].set_name(f"{country} Path")
+    line_series[country].set_line_color(lc.Color(*balloon_colors[country]))
 
 def adjust_color(base_color, brightness, sensitivity=2):
     r, g, b = base_color
@@ -118,16 +150,27 @@ def adjust_color(base_color, brightness, sensitivity=2):
     return adjusted_color
 
 async def move_balloons():
-    for year_idx, year in enumerate(years):
-        print(f"Year: {year}")
-        for i, country in enumerate(countries):
-            height = normalized_heights[country][year_idx]
-            brightness = normalized_energy[country][year_idx]
-            color = adjust_color(balloon_colors[country], brightness, sensitivity=2)  # Sensitivity = 2
-            balloons[country].set_model_location(i * 2, height, year_idx)
-            balloons[country].set_color(color)
-        chart.set_title(f"Balloon Race: Year {year}")
-        await asyncio.sleep(1)
+    for year_idx in range(len(years) - 1):
+        for step in range(50):  
+            for i, country in enumerate(countries):
+                x_position = 0.75 + i * 1.5
+                height_start = normalized_heights[country][year_idx]
+                height_end = normalized_heights[country][year_idx + 1]
+                brightness_start = normalized_energy[country][year_idx]
+                brightness_end = normalized_energy[country][year_idx + 1]
+                
+                # Interpolation
+                height = height_start + (height_end - height_start) * (step / 50)
+                brightness = brightness_start + (brightness_end - brightness_start) * (step / 50)
+                color = adjust_color(balloon_colors[country], brightness, sensitivity=2)
+                
+                balloons[country].set_model_location(x_position, height, year_idx + (step / 50))
+                balloons[country].set_color(color)
+                
+                # Update line series
+                line_series[country].add([x_position], [height], [year_idx + (step / 50)])
+            
+            await asyncio.sleep(0.02) 
 
 chart.open(live=True)
 asyncio.run(move_balloons())
