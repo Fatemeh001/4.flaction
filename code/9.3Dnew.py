@@ -69,7 +69,7 @@ balloon_colors = {
 }
 
 
-chart = lc.Chart3D(title="Balloon Race: Normalized GDP Deflator Growth Rate & Energy", theme=lc.Themes.Light)
+chart = lc.Chart3D(title="Balloon Race: Normalized GDP Deflator Growth Rate & Energy", theme=lc.Themes.Dark)
 
 x_axis = chart.get_default_x_axis().set_tick_strategy('Empty')
 x_axis.set_title('Countries')
@@ -170,7 +170,7 @@ async def move_balloons():
                 # Update line series
                 line_series[country].add([x_position], [height], [year_idx + (step / 50)])
             
-            await asyncio.sleep(0.01) 
+            await asyncio.sleep(0.001) 
 
 chart.open(live=True)
 asyncio.run(move_balloons())
